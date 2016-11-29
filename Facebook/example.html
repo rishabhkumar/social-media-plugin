@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FB 1st Trial</title>
+    <script src = 'http://momentjs.com/downloads/moment.min.js'></script>
+</head>
+<body>
+Hey there
+
+
+<div id="status"></div>
+<div id="status1"></div>
+<div id="feed"></div>
+<img id="dp" src="" alt="Not fetched" height="200" width="200">
+
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '1329192660438015',
+            xfbml      : true,
+            version    : 'v2.2'
+        });
+        FB.AppEvents.logPageView();
+    };
+
+    function info(id) {
+        let uid = '/' + id;
+        FB.api(uid, 'GET', {fields: 'name, picture.width(200).height(200)'}, (response) => {
+            document.getElementById('status').innerHTML = 'Hello ' + response.name;
+            document.getElementById('dp').src = response.picture.data.url;
+        })
+    }
+
+    function lol(page) {
+        let pageURL = '/' + page + '/feed?time_format=U';
+        FB.api(pageURL, 'GET', {}, (response) => {
+            let feed = '';
+            console.log(response);
+            for(let i = 0; i<response.data.length; i++) {
+                if(response.data[i].message) {
+                    feed += response.data[i].message + ', <i>' + moment(response.data[i].created_time).fromNow() + '</i><br>';
+                }
+                else {
+                    feed += response.data[i].story + ', <i>' + moment(response.data[i].created_time).fromNow() + '</i><br>';
+                }
+            }
+            document.getElementById('feed').innerHTML = feed;
+            console.log(feed);
+        })
+    }
+
+
+    (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<input type="text" id="tf1" placeholder="Enter unique page name here">
+<input type="text" id="tf2" placeholder="Enter unique user id here">
+<button onclick="info(document.getElementById('tf2').value)">Get User info</button>
+<button onclick="lol(document.getElementById('tf1').value)">Get</button>
+
+</body>
+</html>
